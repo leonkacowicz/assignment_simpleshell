@@ -90,20 +90,26 @@ void ParseECommand(char * strString)
 	/* Zera o vetor de commandos */
 	for (i = 0; i < TAMANHO_LINHA; i++) eCommands[i] = 0;
 	
+	/* faz o primeiro elemento do vetor apontar para o comeco da string */
 	eCommands[0] = strString;
 	
 	for (i = 0; strString[i] != '\0'; i++)
-	{
+	{ /* varre a string caracter a caracter */
 		if (strString[i] == '&')
-		{
+		{ /* se encontrar um "&" faz o proximo elemento da string apontar para
+			 o caracter seguinte e quebra a string em duas (substituindo o &
+			 por \0
+		  */
 			eCommands[numECmds++] = &(strString[i+1]);
 			strString[i] = '\0';
 		}
 	}
 	for (i = 0; i < numPipeCmds; i++)
 	{
+		/* retira os espacos */
 		trim(eCommands[i]);
-		printf("& %d: %s\n", i, eCommands[i]);
+		/* DEBUG:	printf("& %d: %s\n", i, eCommands[i]);
+		*/
 	}
 }
 
@@ -116,24 +122,30 @@ void ParsePipeCommand(char * strString)
 	/* Zera o vetor de commandos */
 	for (i = 0; i < TAMANHO_LINHA; i++) pipeCommands[i] = 0;
 	
+	/* faz o primeiro elemento do vetor apontar para o comeco da string */
 	pipeCommands[0] = strString;
 	
-	for (i = 0; strString[i] != '\0'; i++)
-	{
+	for (i = 0; strString[i] != '\0'; i++)	 
+	{ /* varre a string caracter a caracter */
 		if (strString[i] == '|')
 		{
+		 /* se encontrar um "|" faz o proximo elemento da string apontar para
+			 o caracter seguinte e quebra a string em duas (substituindo o |
+			 por \0
+		  */
 			pipeCommands[numPipeCmds++] = &(strString[i+1]);
 			strString[i] = '\0';
 		}
 	}
 	for (i = 0; i < numPipeCmds; i++)
 	{
+		/* retira os espacos de cada string */
 		trim(pipeCommands[i]);
-		/* DEBUG :
-		printf("Pipe %d: %s\n", i, pipeCommands[i]);
+		/* DEBUG :	printf("Pipe %d: %s\n", i, pipeCommands[i]);
 		*/
 	}
 }
+
 int ParseRedirectCommand(char * strString)
 {
 	int i;
@@ -142,7 +154,9 @@ int ParseRedirectCommand(char * strString)
 
 	/* DEBUG: printf("String de entrada: \"%s\"\n", strString); */
 	
-	/* Aqui procura os caracteres < e >, se houver mais de um de cada retorna com erro */
+	/* Aqui procura os caracteres < e >, 
+	se houver mais de um de cada retorna com erro */
+
 	for (i = 0; strString[i] != '\0'; i++)
 	{
 		if (strString[i] == '<' && !SinalMenor) SinalMenor = i;
@@ -191,9 +205,17 @@ int ParseCommand(char * strCommand, char ** pComando,  char ** vetArgs)
 	/* procura comando principal */
 	int num_args = 0;
 	char * pLinha = strCommand;
-	for (num_args = 0; num_args < NUM_ARGS; num_args++) vetArgs[num_args] = (char *)0;
+
+	/* zera o vetor de argumentos */
+	for (num_args = 0; num_args < NUM_ARGS; num_args++) 
+		vetArgs[num_args] = (char *)0;
+
+
+	/* o numero minimo de argumentos eh 1  (o proprio comando) */
 	num_args = 1;
+
 	if (!*pLinha) return 0; /* linha vazia */
+
 	vetArgs[0] = *pComando = pLinha; 
 	/* O proprio comando eh passado para o programa como o primeiro argumento*/
 
@@ -208,10 +230,14 @@ int ParseCommand(char * strCommand, char ** pComando,  char ** vetArgs)
 		/* se a string nao terminou, procura a proxima palavra */
 		if (*pLinha)
 		{
-			*pLinha = 0; /* termina a string do comando ou do argumento anterior */
+			*pLinha = 0; 
+			/* termina a string do comando ou do argumento anterior */
+
+
 			pLinha++;
 			
-			/* anda os espacos vazios e procura ate aparecer um caracter visivel */
+			/* anda os espacos vazios e procura ate aparecer 
+			um caracter visivel */
 			while ((*pLinha == ' ') || (*pLinha == '\t')) pLinha++;
 			
 			/* Se o caracter encontrado nao for fim de string, 
@@ -230,36 +256,6 @@ int ParseCommand(char * strCommand, char ** pComando,  char ** vetArgs)
 void printErroParseRedir()
 {
 	printf("Erro: duas ou mais redireções de entrada ou saída encontradas\n");
-}
-
-int verifica(char * strCmd)
-{
-	/*
-	int i;
-	int tam = strlen(strCmd);
-	int cmd_ok = 1;
-	int em_redir = 0;
-	int em_pipe = 0;
-	for (i = 0; i < tam; i++)
-	{
-		if (em_pipe)
-		{
-			if (strCmd[i] == '|' || strCmd[i] == '>' || strCmd[i] == '<');
-		}
-		if (!em_redir)
-		{
-			if (strCmd[i] == '>' || strCmd[i] == '<') 
-				em_redir = 1;
-
-		} else {
-			if (strCmd[i] == '>' || strCmd[i] == '<') 
-				return 0;
-			else if (strCmd[i] == '|')
-				return 0;
-		}
-
-	}
-	*/
 }
 
 void execPipeAux(int numCmd, int imprime_pid)
@@ -318,7 +314,7 @@ void execPipeAux(int numCmd, int imprime_pid)
 		exit(1);
 	}
 	
-	if (imprime_pid) printf("%d\n", pid);
+	if (imprime_pid) printf("[%d]\n", pid);
 	
 	close(fd[0]); /* No processo pai nao é usado o pipe, entao fecha os dois descritores*/
 	close(fd[1]);
@@ -383,7 +379,7 @@ void execRedirCmd(char * strCmd, int imprime_pid)
 		printErroParseRedir();
 		exit(1);
 	}
-
+	
 	if (imprime_pid)
 	{
 		pid = fork();
@@ -394,7 +390,7 @@ void execRedirCmd(char * strCmd, int imprime_pid)
 		}
 		if (pid)
 		{
-			printf("%d\n", pid);
+			printf("[%d]\n", pid);
 			exit(0);
 		}
 	}
@@ -418,17 +414,6 @@ void execRedirCmd(char * strCmd, int imprime_pid)
 	}
 
 
-/*	
-*	IMPIME ARGUMENTOS PASSADOS *
-	
-	fprintf(stderr, "Iniciando Processo:\n");
-	
-	fprintf(stderr, "Comando: %s\n", comando);
-	for (i = 0; vetArgumentos[i]; i++)
-		fprintf(stderr, "Arg %d: %s\n", i, vetArgumentos[i]);
-		
-	*/
-
 	if (execvp(comando, vetArgumentos) == -1)
 	{
 		/* O programa não rodou */
@@ -450,15 +435,6 @@ void processoPai(int childPID)
 	int ret; /* receberÃ¡ o status de retorno do processo criado */
 	waitpid(childPID, &ret, 0);
 
-}
-
-int zmain()
-{
-	while(1)
-	{
-		prompt();
-		ParseRedirectCommand(strLinha);
-	}
 }
 
 int main()

@@ -1,0 +1,28 @@
+Trabalho 1 - Parte 1 de SC1
+
+Implementação de um shell simples.
+
+Ao iniciar o shell deve imprimir a mensagem "Trabalho de SC1. Shell Simples" seguida de um prompt.
+A cada prompt o shell irá imprimir "[lsh]$ " e irá esperar do usuário uma linha de comando de até 255 caracteres.
+
+Implementamos todas as funcionalidades pedidas no enunciado e estão todas funcionando.
+
+Foram implementadas as seguintes funcionalidades:
+1. Linha basica de comando do tipo "cmd arg1 arg2 ... argn", na qual é executado o comando (primeira palavra) e para ele é passado um vetor de palavras {cmd, arg1, ..., argn}
+
+2. Linha de comando com redireção de entrada e/ou sáida de/para arquivos:
+	cmd arg1 arg2 ... argn [ < infile ] [ > outfile ]
+O shell irá redirecionar a entrada padrão para o infile (se presente na linha de comando) e 
+a saída padrão para o outfile (se presente na linha de comando)
+
+3. Linha de comando com pipe:
+	cmd arg1...argn [<infile][>outfile] | cmd arg1...argn [<infile][>outfile] | ...
+
+Redireciona a saida de cada programa para a entrada do programa seguinte, e a saida do ultimo para a tela.
+
+4. Linha de comando com &
+	Linha de comando com pipe 1 & Linha de comando com pipe 2 & ...
+Executa os comandos terminados por um &, em background.
+
+
+
