@@ -50,8 +50,9 @@ void trim(char * strString)
 	{
 		*pString++;
 	}
-	strcpy(strString, pString);
-	
+    int i = 0;
+    for (; pString[i] != 0; i++) strString[i] = pString[i];
+    strString[i] = 0;
 }
 
 int prompt()
@@ -60,17 +61,14 @@ int prompt()
 	strOutFile = NULL;
 
 	printf("[lsh]$ ");
-	if (!fgets(strLinha, TAMANHO_LINHA, stdin)) return 0;
-		trim(strLinha);
+	if (!fgets(strLinha, TAMANHO_LINHA, stdin))
+        return 0;
+    trim(strLinha);
 
 	
 	/* Caso seja o comando de saida, para o programa imediatamente */
-	if (strcmp(strLinha, "exit") == 0)
-	{
-		/* sai do shell*/
-		printf("Tchau!\n");
-		exit(0);
-	}
+	if (strcmp(strLinha, "exit") == 0) return 0;
+
 	intTamanhoLinha = strlen(strLinha);
 	return 1;
 }
@@ -447,7 +445,11 @@ int main()
 	while(1)
 	{
 		
-		prompt();
+		if (!prompt()) {
+            /* sai do shell*/
+            printf("Tchau!\n");
+            exit(0);
+        }
 
 		childPID = fork();
 
